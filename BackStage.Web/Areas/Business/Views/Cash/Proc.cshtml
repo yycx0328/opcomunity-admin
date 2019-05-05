@@ -1,0 +1,150 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSubmit").click(function () {
+                save();
+            });
+
+            init();
+        });
+
+        function init() {
+            console.log(queryString("transactionId"));
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Cash/GetDetail',
+                data: { transactionId: queryString("transactionId") },
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                    if (typeof (result) != undefined && result != null) {
+                        if (result.Status!=0)
+                            $("#btnSubmit").attr("disabled", "disabled");
+                        $("#txtId").val(result.Id);
+                        $("#txtUserId").val(result.UserId);
+                        $("#txtNickName").val(result.NickName);
+                        $("#txtPhoneNo").val(result.PhoneNo);
+                        $("#txtCashMoney").val(result.CashMoney);
+                        $("#txtCashRatio").val(result.CashRatio);
+                        $("#txtCoinCount").val(result.CoinCount);
+                        $("#txtCashAccount").val(result.CashAccount);
+                        $("#txtCashName").val(result.CashName);
+                        $("#txtStatusDescription").val(result.StatusDescription);
+                        $("#txtCashTime").val(result.CashTime.toString().getDate());
+                    }
+                }
+            });
+        }
+
+        function save() {
+            var id = $("#txtId").val();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Cash/Save',
+                data: { transactionId: id },
+                dataType: 'json',
+                success: function (result) {
+                    if (result == "提交成功")
+                        $("#btnSubmit").attr("disabled", "disabled");
+                    alert(result);
+                }
+            });
+        }
+
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                主播信息
+            </header>
+            <div class="panel-body">
+                <form class="form-horizontal tasi-form" method="get">
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">用户Id</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="txtId" type="text" style="display:none;" />
+                            <input class="form-control" id="txtUserId" type="text" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">昵称</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtNickName" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">手机号</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtPhoneNo" class="form-control" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-2 col-sm-2 control-label">提现金额</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="txtCashMoney" type="text" disabled />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">提现比率</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCashRatio" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">金币数</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCoinCount" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">提现支付宝</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCashAccount" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">支付宝名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtCashName" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 col-sm-2 control-label">状态</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="txtStatusDescription" type="text" disabled />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-2 col-sm-2 control-label">提现时间</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="txtCashTime" type="text" disabled />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-2 col-sm-2 control-label"></label>
+                        <div class="col-sm-10" style="text-align:center;">
+                            <button type="button" id="btnSubmit" class="btn btn-primary" style="width:120px;">提&nbsp;&nbsp;交</button>
+                            <button type="button" class="btn btn-default" onclick="javascrtpt:window.location.href='/Business/Cash/Index'">返&nbsp;&nbsp;回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+

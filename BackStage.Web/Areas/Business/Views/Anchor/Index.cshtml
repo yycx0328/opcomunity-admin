@@ -1,0 +1,146 @@
+﻿@using System.Text
+@using BackStage.Service.Dto
+
+@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+
+@section Scripts{
+    <script>
+        $(function() { 
+            $("#btnSearch").click(function () {
+                init();
+            });
+
+            init();
+        });
+
+        function init() {
+            var condition = $("#txtCondition").val();
+            var auth = $("#listIsAuth").val();
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Anchor/GetList',
+                data: { pageIndex: 1, pageSize: 1000, condition: condition, auth: auth },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].UserId + "</td>");
+                            tr.append("<td>" + result[i].NickName + "</td>");
+                            tr.append("<td>" + result[i].PhoneNo + "</td>");
+                            tr.append("<td>" + result[i].Glamour + "</td>");
+                            tr.append("<td>" + result[i].CashRatio + "</td>");
+                            tr.append("<td>" + result[i].CallRatio + "</td>");
+                            tr.append("<td>" + result[i].IsAuth + "</td>");
+                            if (result[i].AuthTime != null)
+                                tr.append("<td>" + result[i].AuthTime.toString().getDate() + "</td>");
+                            else
+                                tr.append("<td>--</td>");  
+                            tr.append("<td>" + result[i].ApplyTime.toString().getDate() + "</td>");
+                            tr.append("<td><a href='/Business/Anchor/Edit?userId=" + result[i].UserId
+                                + "'>编辑</a> | <a onclick='setOffLine(" + result[i].UserId + ")'>下线</a> | <a onclick='setBlackAnchor(" + result[i].UserId + ")'>拉黑</a></td>");
+                        }
+                    }
+                }
+            });
+        }
+
+        function setOffLine(anchorId)
+        {
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Anchor/SetChatStatus',
+                data: { anchorId: anchorId },
+                dataType: 'json',
+                success: function (result) {
+                    alert(result);
+                }
+            });
+        }
+
+        function setBlackAnchor(anchorId) {
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Anchor/SetBlackAnchor',
+                data: { anchorId: anchorId },
+                dataType: 'json',
+                success: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="txtCondition">复合条件:</label>
+                        <input type="text" class="form-control" id="txtCondition" placeholder="用户Id/昵称/手机号">
+                    </div>
+                    <div class="form-group" style="margin-left:10px;">
+                        <label for="listIsAuth">是否认证:</label>
+                        <select id="listIsAuth" class="form-control">
+                            <option value="">全部</option>
+                            <option value="true">是</option>
+                            <option value="false">否</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            主播Id
+                        </th>
+                        <th>
+                            昵称
+                        </th>
+                        <th>
+                            手机号
+                        </th>
+                        <th>
+                            魅力值
+                        </th>
+                        <th>
+                            提现比率
+                        </th>
+                        <th>
+                            呼叫比率
+                        </th>
+                        <th>
+                            是否认证
+                        </th>
+                        <th>
+                            认证时间
+                        </th>
+                        <th>
+                            申请时间
+                        </th>
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+

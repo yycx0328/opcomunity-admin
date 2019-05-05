@@ -1,0 +1,137 @@
+﻿@using System.Text
+
+@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+
+@section Scripts{
+    @Scripts.Render("~/JS/Kendo/custom/Js")
+    <script>
+        $(function () {
+            var date = (new Date()).format('yyyy-MM-dd');
+            $("#txtStartDate").val(addDate(date, 'd', -7).format('yyyy-MM-dd'));
+            $("#txtEndDate").val(date);
+
+            $("#btnSearch").click(function () {
+                init();
+            });
+            init();
+        });
+        
+        function init() {
+            var startDate = $("#txtStartDate").val();
+            var endDate = $("#txtEndDate").val();
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Statistics/GetCoinStatistics',
+                data: { startDate: startDate, endDate: endDate },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + jsonDateFormat(result[i].Date) + "</td>");
+                            tr.append("<td>" + result[i].TotalRegistGive + "</td>");
+                            tr.append("<td>" + result[i].TotalCharge + "</td>");
+                            tr.append("<td>" + result[i].TotalActiveGive + "</td>");
+                            tr.append("<td>" + result[i].TotalInvite + "</td>");
+                            tr.append("<td>" + result[i].TotalSendGift + "</td>");
+                            tr.append("<td>" + result[i].TotalLiveCall + "</td>");
+                            tr.append("<td>" + result[i].TotalCash + "</td>");
+                            tr.append("<td>" + result[i].TotalCashMoney + "</td>");
+                            tr.append("<td>" + result[i].TotalIn + "</td>");
+                            tr.append("<td>" + result[i].TotalOut + "</td>");
+                            tr.append("<td>" + result[i].TotalRemaind + "</td>");
+                        }
+                    }
+                }
+            });
+        }
+
+        ///无时分秒
+        function jsonDateFormat(jsonDate) {//json日期格式转换为正常格式
+            try {
+                var date = new Date(parseInt(jsonDate.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                return date.getFullYear() + "-" + month + "-" + day;
+            } catch (ex) {
+                return "";
+            }
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="txtStartDate" placeholder="开始日期">
+                        <span> 至 </span>
+                        <input type="text" class="form-control" id="txtEndDate" placeholder="结束日期">
+                    </div>
+                    <div class="form-group" style="margin-left:10px;">
+                        <label for="listChannel">渠道:</label>
+                        <select id="listChannel" class="form-control"></select>
+                    </div>
+
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            日期
+                        </th>
+                        <th>
+                            总赠送(+)
+                        </th>
+                        <th>
+                            总充值(+)
+                        </th>
+                        <th>
+                            总活动(+)
+                        </th>
+                        <th>
+                            总邀请奖励(+)
+                        </th>
+                        <th>
+                            总礼物赠送(-)
+                        </th>
+                        <th>
+                            总通话(-)
+                        </th>
+                        <th>
+                            总提现(-)
+                        </th>
+                        <th>
+                            提现总金额
+                        </th>
+                        <th>
+                            总收入
+                        </th>
+                        <th>
+                            总支出
+                        </th>
+                        <th>
+                            总余额
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+

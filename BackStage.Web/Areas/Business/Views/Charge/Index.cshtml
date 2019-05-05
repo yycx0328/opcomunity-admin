@@ -1,0 +1,136 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSearch").click(function () {
+                init();
+            });
+
+            init();
+        });
+
+        function init() {
+            var condition = $("#txtCondition").val();
+            var status = $("#listStatus").val();
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Charge/GetList',
+                data: { pageIndex: 1, pageSize: 1000, condition: condition, status: status },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].OrderId + "</td>");
+                            tr.append("<td>" + result[i].UserId + "</td>");
+                            tr.append("<td>" + result[i].NickName + "</td>");
+                            tr.append("<td>" + result[i].PhoneNo + "</td>");
+                            tr.append("<td>" + result[i].ChargeType + "</td>");
+                            tr.append("<td>" + result[i].ChargeMoney + "</td>");
+                            tr.append("<td>" + result[i].ExchargeRate + "</td>");
+                            tr.append("<td>" + result[i].CoinCount + "</td>");
+                            tr.append("<td>" + result[i].Status + "</td>");
+                            tr.append("<td>" + result[i].StatusDescription + "</td>");
+                            tr.append("<td>" + result[i].Ip + "</td>");
+                            tr.append("<td>" + result[i].TakeOrderTime.toString().getDate() + "</td>");
+                            if (result[i].ChargeTime != null)
+                                tr.append("<td>" + result[i].ChargeTime.toString().getDate() + "</td>");
+                            else
+                                tr.append("<td>--</td>");
+                            if (result[i].UpdateTime != null)
+                                tr.append("<td>" + result[i].UpdateTime.toString().getDate() + "</td>");
+                            else
+                                tr.append("<td>--</td>");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="txtCondition">复合条件:</label>
+                        <input type="text" class="form-control" id="txtCondition" placeholder="用户Id/昵称/手机号">
+                    </div>
+                    <div class="form-group" style="margin-left:10px;">
+                        <label for="listStatus">状态:</label>
+                        <select id="listStatus" class="form-control">
+                            <option value="">全部</option>
+                            <option value="0">下单</option>
+                            <option value="1">成功</option>
+                            <option value="2">失败</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            订单号
+                        </th>
+                        <th>
+                            用户Id
+                        </th>
+                        <th>
+                            昵称
+                        </th>
+                        <th>
+                            手机号
+                        </th>
+                        <th>
+                            充值类型
+                        </th>
+                        <th>
+                            充值金额
+                        </th>
+                        <th>
+                            充值比率
+                        </th>
+                        <th>
+                            金币数
+                        </th>
+                        <th>
+                            状态
+                        </th>
+                        <th>
+                            状态描述
+                        </th>
+                        <th>
+                            IP
+                        </th>
+                        <th>
+                            下单时间
+                        </th>
+                        <th>
+                            充值时间
+                        </th>
+                        <th>
+                            更新时间
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+

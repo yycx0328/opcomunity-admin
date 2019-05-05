@@ -1,0 +1,136 @@
+﻿@using System.Text
+
+@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSearch").click(function () {
+                init();
+            });
+
+            $("#btnAdd").click(function () {
+                save();
+            });
+            init();
+        });
+
+        function init() {
+            var condition = $("#txtCondition").val(); 
+            var userId = queryString("userId");
+            $("#txtUserId").val(userId);
+            $("")
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/User/GetBindUserList',
+                data: { userId: userId, condition: condition },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].UserId + "</td>");
+                            tr.append("<td>" + result[i].PhoneNo + "</td>");
+                            if (result[i].NewUserId == 0)
+                                tr.append("<td></td>");
+                            else
+                                tr.append("<td>" + result[i].NewUserId + "</td>");
+                            tr.append("<td>" + result[i].NickName + "</td>");
+                            tr.append("<td>" + result[i].CostAwardRate + "</td>");
+                            tr.append("<td>" + result[i].CashoutAwardRate + "</td>"); 
+                            tr.append("<td>" + result[i].InviteTime.toString().getDate() + "</td>");
+                            if (result[i].NewUserId == 0)
+                                tr.append("<td>--</td>");
+                            else
+                                tr.append("<td><a href='/Business/User/EditBind?id=" + result[i].Id + "'>编辑</a></td>");
+                        }
+                    }
+                }
+            });
+        }
+
+        function save() {
+            var userId = $("#txtUserId").val();
+            var newUserId = $("#txtNewUserId").val();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/User/AddInviteUser',
+                data: { userId: userId, newUserId: newUserId },
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                    alert(result);
+                }
+            });
+        }
+
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <input type="text" id="txtUserId" style="display:none" />
+                    <div class="form-group">
+                        <label for="txtCondition">复合条件:</label>
+                        <input type="text" class="form-control" id="txtCondition" placeholder="被邀请用户Id/昵称/手机号">
+                    </div>
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                    <div class="form-group">
+                        <label for="txtNewUserId">添加邀请用户:</label>
+                        <input type="text" class="form-control" id="txtNewUserId" placeholder="被邀请人Id">
+                    </div>
+                    <button type="submit" id="btnAdd" class="btn btn-success">添加</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            邀请人Id
+                        </th>
+                        <th>
+                            被邀请人手机号
+                        </th>
+                        <th>
+                            被邀请人Id
+                        </th>
+                        <th>
+                            被邀请人昵称
+                        </th>
+                        <th>
+                            消费奖励（%）
+                        </th>
+                        <th>
+                            提现奖励（%）
+                        </th>
+                        <th>
+                            邀请时间
+                        </th>
+                        <th style="width:50px;">
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+

@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "提现统计";
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+
+@section Styles{
+    @Styles.Render("~/Template/Kendo/styles/Default")
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/JS/Kendo/content/Js")
+    <script>
+        $(function () {
+            var date = (new Date()).format('yyyy-MM-dd');
+            $("#txtStartDate").val(addDate(date, 'd', -7).format('yyyy-MM-dd'));
+            $("#txtEndDate").val(date);
+
+            $("#btnSearch").click(function () {
+                createChart();
+            });
+
+            createChart();
+        });
+
+        function createChart() {
+            var startDate = $("#txtStartDate").val();
+            var endDate = $("#txtEndDate").val();
+            if (startDate == "" || endDate == "") {
+                alert("请输入查询条件（日期为必要项）！");
+                return;
+            }
+            $("#chart").kendoChart({
+                // theme: "MaterialBlack",
+                theme: $(document).data("kendoSkin") || "default",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "/Business/Statistics/GetCashStatistics?startDate=" + startDate + "&endDate=" + endDate,
+                            dataType: "json"
+                        }
+                    },
+                    sort: {
+                        field: "Date",
+                        dir: "asc"
+                    }
+                },
+                chartArea: {
+                    height: 400
+                },
+                title: {
+                    position: "top",
+                    text: "提现统计"
+                },
+                legend: {
+                    position: "bottom"
+                },
+                seriesDefaults: {
+                    type: "line"
+                },
+                series: [{
+                    field: "TotalCoinCount",
+                    name: "总金币数",
+                    color: "#0023DE"
+                }, 
+                {
+                    field: "TotalCashMoney",
+                    name: "总金额",
+                    color: "#68217A"
+                }],
+                categoryAxis: {
+                    field: "Date",
+                    type: "date",
+                    majorGridLines: {
+                        visible: false
+                    },
+                    labels: {
+                        rotation: "-45",
+                        format: "MM-dd"
+                    },
+                    crosshair: {
+                        visible: true
+                    }
+                },
+                valueAxis: [{
+                    labels: {
+                        format: "{0:N0}"
+                    },
+                    color: "#000000",
+                }],
+                tooltip: {
+                    visible: true,
+                    template: "#= series.name #: #= value #"
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="form-inline">
+                    <div class="input-group input-large custom-date-range" data-date-format="yyyy/mm/dd">
+
+                        <span class="input-group-addon">日期从</span>
+                        <input type="text" class="form-control dpd1" name="from" id="txtStartDate">
+                        <span class="input-group-addon">到</span>
+                        <input type="text" class="form-control dpd2" id="txtEndDate" name="to">
+                    </div>
+
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <div id="chart">
+            </div>
+        </section>
+    </div>
+</div>

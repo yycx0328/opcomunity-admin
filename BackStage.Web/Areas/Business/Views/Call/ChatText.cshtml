@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSearch").click(function () {
+                init();
+            });
+
+            init();
+        });
+
+        function init() {
+            var f_condition = $("#txtFCondition").val();
+            var t_condition = $("#txtTCondition").val();
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Call/GetChatText',
+                data: { pageIndex: 1, pageSize: 1000, f_condition: f_condition, t_condition: t_condition },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].FromUserId + "</td>");
+                            tr.append("<td>" + result[i].FromNick + "</td>");
+                            tr.append("<td>" + result[i].ToUserId + "</td>");
+                            tr.append("<td>" + result[i].ToNick + "</td>");
+                            tr.append("<td>" + result[i].Body + "</td>");
+                            tr.append("<td>" + result[i].MsgTimestamp.toString().getDate() + "</td>");
+                            tr.append("<td>" + result[i].CreateTime.toString().getDate() + "</td>");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="txtFCondition">发送方:</label>
+                        <input type="text" class="form-control" style="width:360px;" id="txtFCondition" placeholder="发送方Id/昵称">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtTCondition">接收方:</label>
+                        <input type="text" class="form-control" style="width:360px;" id="txtTCondition" placeholder="接收方Id/昵称">
+                    </div>
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            发送方Id
+                        </th>
+                        <th>
+                            发送方昵称
+                        </th>
+                        <th>
+                            接收方Id
+                        </th>
+                        <th>
+                            接收方昵称
+                        </th>
+                        <th>
+                            消息内容
+                        </th>
+                        <th>
+                            发送时间
+                        </th>
+                        <th>
+                            记录时间
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+

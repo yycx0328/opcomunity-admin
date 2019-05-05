@@ -1,0 +1,98 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            $("#btnSubmit").click(function () {
+                save();
+            });
+
+            init();
+        });
+
+        function init(){
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Channel/InitEdit',
+                data: { Id: queryString("Id") },
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                    if (typeof (result) != undefined && result != null) {
+                        $("#txtId").attr("disabled", "disabled");
+                        $("#txtId").val(result.Id);
+                        $("#txtDescription").val(result.Description);
+                        $("#listIsAvailable").val(result.IsAvailable.toString());
+                    }
+                }
+            });
+        }
+
+        function save() {
+            var id = $("#txtId").val();
+            var description = $("#txtDescription").val();
+            var isAvailable = $("#listIsAvailable").val();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Channel/Save',
+                data: { id: id, description: description, isAvailable: isAvailable },
+                dataType: 'json',
+                success: function (result) {
+                    alert(result);
+                    window.location.href = '/Business/Channel/Index';
+                }
+            });
+        }
+
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                渠道编辑
+            </header>
+            <div class="panel-body">
+                <form class="form-horizontal tasi-form" method="get">
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">渠道Id</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="txtId" type="text" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">描述</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtDescription" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">是否可用</label>
+                        <div class="col-sm-10">
+                            <select id="listIsAvailable" class="form-control m-b-10">
+                                <option value="true">是</option>
+                                <option value="false">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 col-sm-2 control-label"></label>
+                        <div class="col-sm-10" style="text-align:center;">
+                            <button type="button" id="btnSubmit" class="btn btn-primary" style="width:120px;">提&nbsp;&nbsp;交</button>
+                            <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);">返&nbsp;&nbsp;回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>

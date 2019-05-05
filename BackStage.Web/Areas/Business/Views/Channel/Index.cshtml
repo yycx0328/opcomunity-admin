@@ -1,0 +1,86 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSearch").click(function () {
+                init();
+            });
+
+            init();
+        });
+
+        function init() {
+            var channle = $("#txtChannel").val();
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Channel/GetChannelList',
+                data: { pageIndex: 1, pageSize: 1000, channel: channle },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].Id + "</td>");
+                            tr.append("<td>" + result[i].Description + "</td>");
+                            tr.append("<td>" + result[i].CreateTime.toString().getDate() + "</td>");
+                            tr.append("<td>" + result[i].UpdateTime.toString().getDate() + "</td>");
+                            tr.append("<td><a href='/Business/Channel/Edit?Id=" + result[i].Id + "'>修改</a></td>");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <div class="form-group" style="margin-left:10px;">
+                        <label for="txtChannel">渠道号:</label>
+                        <input type="text" class="form-control" id="txtChannel" placeholder="渠道号">
+                    </div>
+
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                    &nbsp;&nbsp;
+                    <button type="submit" id="btnAdd" onclick="window.location.href='/Business/Channel/Edit?Id=0'" class="btn btn-success">新增</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            渠道Id
+                        </th>
+                        <th>
+                            渠道描述
+                        </th>
+                        <th>
+                            添加时间
+                        </th>
+                        <th>
+                            修改时间
+                        </th>
+                        <th style="width:50px;">
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+

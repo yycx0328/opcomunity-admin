@@ -1,0 +1,137 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSubmit").click(function () {
+                edit();
+            });
+
+            $("#btnClear").click(function () {
+                clear();
+            });
+
+            init();
+        });
+
+        function init() {
+            var id = queryString("Id");
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Channel/GetAdmUserChannel',
+                data: { userId: id },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].AdmUserId + "</td>");
+                            tr.append("<td>" + result[i].ChannelId + "</td>");
+                            tr.append("<td>" + result[i].Deduction + "</td>");
+                            tr.append("<td>" + result[i].CreateTime.toString().getDate() + "</td>");
+                            tr.append("<td><button class='btn btn-default' onclick='initEdit("
+                                + result[i].AdmUserId + "," + result[i].ChannelId + "," + result[i].Deduction + ")'>修改</button></td>");
+                        }
+                    }
+                }
+            });
+        }
+
+        function initEdit(uid, channelId, deduction) {
+            $("#txtUserId").val(uid);
+            $("#txtUserId").attr("disabled", "disabled");
+            $("#txtChannelId").val(channelId);
+            $("#txtDeduction").val(deduction);
+        }
+
+        function clear() {
+            $("#txtUserId").val("");
+            $("#txtUserId").removeAttr("disabled");
+            $("#txtChannelId").val("");
+            $("#txtDeduction").val("");
+        }
+
+
+        function edit() {
+            var id = $("#txtUserId").val();
+            var channel = $("#txtChannelId").val();
+            var deduction = $("#txtDeduction").val();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Channel/SaveAdmUserChannel',
+                data: { id: id, channel: channel, deduction: deduction },
+                dataType: 'json',
+                success: function (result) {
+                    alert(result);
+                    window.location.reload();
+                }
+            });
+        }
+
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            用户Id
+                        </th>
+                        <th>
+                            渠道号
+                        </th>
+                        <th>
+                            扣量
+                        </th>
+                        <th>
+                            添加时间
+                        </th>
+                        <th style="width:50px;">
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="txtUserId">用户Id:</label>
+                        <input type="text" class="form-control" id="txtUserId" placeholder="用户Id">
+                    </div>
+                    <div class="form-group" style="margin-left:10px;">
+                        <label for="txtChannelId">渠道号:</label>
+                        <input type="text" class="form-control" id="txtChannelId" placeholder="渠道号">
+                    </div>
+                    <div class="form-group" style="margin-left:10px;">
+                        <label for="txtDeduction">扣量:</label>
+                        <input type="text" class="form-control" id="txtDeduction" placeholder="扣量">
+                    </div>
+                    <button type="submit" id="btnSubmit" class="btn btn-success">提交</button>
+                    <button id="btnClear" class="btn btn-warning">重置</button>
+                    <button id="btnReturn" class="btn btn-default" onclick="javascript: window.location.href = '/Business/Channel/AdmUserList'">返回</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+

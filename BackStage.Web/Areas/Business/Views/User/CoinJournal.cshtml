@@ -1,0 +1,93 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSearch").click(function () {
+                init();
+            });
+
+            init();
+        });
+
+        function init() {
+            var condition = $("#txtCondition").val();
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/User/GetCoinJournalList',
+                data: { userId: queryString("userId"), pageIndex: 1, pageSize: 1000},
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].CoinCount + "</td>");
+                            tr.append("<td>" + result[i].CurrentCount + "</td>");
+                            tr.append("<td>" + result[i].IOStatus + "</td>");
+                            tr.append("<td>" + result[i].JournalType + "</td>");
+                            tr.append("<td>" + result[i].JournalDesc + "</td>");
+                            tr.append("<td>" + result[i].Ip + "</td>");
+                            tr.append("<td>" + result[i].CreateTime.toString().getDate() + "</td>");
+                        }
+                    }
+                }
+            });
+        }
+
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <button type="button" class="btn btn-default" onclick="javascrtpt:window.location.href='/Business/User/Coin'">返&nbsp;&nbsp;回</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            发生金额
+                        </th>
+                        <th>
+                            当前余额
+                        </th>
+                        <th>
+                            收/支
+                        </th>
+                        <th>
+                            流水类型
+                        </th>
+                        <th>
+                            流水说明
+                        </th>
+                        <th>
+                            Ip
+                        </th>
+                        <th>
+                            发生时间
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+

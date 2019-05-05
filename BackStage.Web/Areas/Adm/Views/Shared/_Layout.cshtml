@@ -1,0 +1,307 @@
+﻿@using System.Text
+@using BackStage.Service.Enum
+@using BackStage.Service.Dto
+
+@{
+    Layout = null;
+    List<MenuDto> myMenus = ViewBag.MyMenus;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="author" content="dj.wong" />
+    <meta name="keywords" content="掌上女友后台管理系统" />
+    <meta name="description" content="掌上女友后台管理系统" />
+
+    <title>@ViewBag.Title - 掌上女友后台管理系统</title>
+
+    <!--switchery-->
+    <link href="/Template/Admin/content/Js/switchery/switchery.min.css" rel="stylesheet" type="text/css" media="screen" />
+
+    <!--common style-->
+    @Styles.Render("~/Template/Admin/content/Css/BaseStyles")
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="/Images/ico/favicon.ico" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/Images/ico/apple-touch-icon-144-precomposed.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/Images/ico/apple-touch-icon-114-precomposed.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/Images/ico/apple-touch-icon-72-precomposed.png" />
+    <link rel="apple-touch-icon-precomposed" href="/Images/ico/apple-touch-icon-57-precomposed.png" />
+</head>
+<body class="sticky-header" @*style="overflow: hidden" data-canscroll="false"*@>
+    <section>
+        <!-- sidebar left start-->
+        <div class="sidebar-left">
+            <!--responsive view logo start-->
+            <div class="logo dark-logo-bg visible-xs-* visible-sm-*">
+                <a href="/">
+                    <span class="brand-name">掌上女友</span>
+                </a>
+            </div>
+            <!--responsive view logo end-->
+
+            <div class="sidebar-left-info">
+                <!-- visible small devices start-->
+                <div class="search-field">  </div>
+                <!-- visible small devices end-->
+                <!--sidebar nav start-->
+                <ul id="jucheapMenu" class="nav nav-pills nav-stacked side-navigation">
+                    <li>
+                        <h3 class="navigation-title">导航菜单</h3>
+                    </li>
+
+                    @if (myMenus != null && myMenus.Any())
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        var models = myMenus.Where(item => item.Type == MenuType.模块);
+                        foreach (var m in models)
+                        {
+                            var menus = myMenus.Where(item => item.ParentId == m.Id && item.Type == MenuType.菜单);
+                            sb.Append("<li class=\"menu-list\">");
+                            sb.AppendFormat("<a href=\"javascript:;\" data-url=\"{0}/{1}/{2}/0\"><i class=\"fa fa-laptop\"></i> <span>{3}</span></a>", m.Url, m.ParentId, m.Id, m.Name);
+                            if (menus != null && menus.Any())
+                            {
+                                sb.Append("<ul class=\"child-list\">");
+                                foreach (var menu in menus)
+                                {
+                                    sb.AppendFormat("<li><a href=\"javascript:;\" data-url=\"{0}/{1}/{2}/0\"> {3}</a></li>", menu.Url, menu.ParentId, menu.Id, menu.Name);
+                                }
+                                sb.Append("</ul>");
+                            }
+                            sb.Append("</li>");
+                        }
+                        @(new MvcHtmlString(sb.ToString()))
+                    }
+                </ul>
+                <!--sidebar nav end-->
+
+                <!--sidebar widget start-->
+                <div class="sidebar-widget">
+                    <h4>2012 - @DateTime.Now.AddYears(1).Year &copy; by Opcomunity.</h4>
+                </div>
+                <!--sidebar widget end-->
+            </div>
+        </div>
+        <!-- sidebar left end-->
+        <!-- body content start-->
+        <div class="body-content">
+
+            <!-- header section start-->
+            <div class="header-section">
+
+                <!--logo and logo icon start-->
+                <div class="logo dark-logo-bg hidden-xs hidden-sm">
+                    <a href="@Url.Action("Index","Control")">
+                        <span class="brand-name" style="color:#b0e0c6;">首页</span>
+                    </a>
+                </div>
+
+                <div class="icon-logo dark-logo-bg hidden-xs hidden-sm">
+                    <a href="@Url.Action("Index","Control")">
+                        <img src="/Template/Admin/content/img/logo-icon.png" alt="" />
+                        <!--<i class="fa fa-maxcdn"></i>-->
+                    </a>
+                </div>
+                <!--logo and logo icon end-->
+                <!--toggle button start-->
+                <a class="toggle-btn"><i class="fa fa-outdent"></i></a>
+                <!--toggle button end-->
+                <div class="notification-wrap">
+                    <!--left notification start-->
+                    <div class="left-notification">
+                        <ul class="notification-menu">
+                            <!--mail info start-->
+                            <li class="d-none">
+                                <a href="javascript:;" class="btn btn-default dropdown-toggle info-number" data-toggle="dropdown">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-primary">2</span>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-title">
+                                    <div class="title-row">
+                                        <h5 class="title purple">
+                                            You have 2 Unread Mail
+                                        </h5>
+                                        <a href="javascript:;" class="btn-primary btn-view-all">View all</a>
+                                    </div>
+                                    <div class="notification-list mail-list">
+                                        <a href="javascript:;" class="single-mail">
+                                            <span class="icon bg-primary">
+                                                S
+                                            </span>
+                                            <strong>Smith Doe</strong>
+                                            <small> Just Now</small>
+                                            <p>
+                                                <small>Hello smith i have some query about your</small>
+                                            </p>
+                                            <span class="un-read tooltips" data-original-title="Mark as Read" data-toggle="tooltip" data-placement="left">
+                                                <i class="fa fa-circle"></i>
+                                            </span>
+                                        </a>
+                                        <a href="javascript:;" class="single-mail">
+                                            <span class="icon bg-success">
+                                                A
+                                            </span>
+                                            <strong>Anthony Jones </strong>
+                                            <small> 30 Mins Ago</small>
+                                            <p>
+                                                <small>Hello this is an example message</small>
+                                            </p>
+                                            <span class="un-read tooltips" data-original-title="Mark as Read" data-toggle="tooltip" data-placement="left">
+                                                <i class="fa fa-circle"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!--mail info end-->
+                            <!--task info start-->
+                            <li class="d-none">
+                                <a href="javascript:;" class="btn btn-default dropdown-toggle info-number" data-toggle="dropdown">
+                                    <i class="fa fa-tasks"></i>
+                                    <span class="badge bg-success">1</span>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-title">
+                                    <div class="title-row">
+                                        <h5 class="title green">
+                                            You have 1 task
+                                        </h5>
+                                        <a href="javascript:;" class="btn-success btn-view-all">View all</a>
+                                    </div>
+                                    <div class="notification-list task-list">
+                                        <a href="javascript:;">
+                                            <span class="icon ">
+                                                <i class="fa fa-paw green-color"></i>
+                                            </span>
+                                            <span class="task-info">
+                                                Smith Doe
+                                                <small> Assigned new task 10 min ago</small>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!--task info end-->
+                            <!--notification info start-->
+                            <li>
+                                <a href="javascript:;" class="btn btn-default dropdown-toggle info-number" data-toggle="dropdown">
+                                    <i class="fa fa-bell-o"></i>
+                                    <span class="badge bg-warning">2</span>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-title ">
+
+                                    <div class="title-row">
+                                        <h5 class="title yellow">
+                                            You have 2 New Notification
+                                        </h5>
+                                        <a href="javascript:;" class="btn-warning btn-view-all">View all</a>
+                                    </div>
+                                    <div class="notification-list-scroll sidebar">
+                                        <div class="notification-list mail-list not-list">
+                                            <a href="javascript:;" class="single-mail">
+                                                <span class="icon bg-primary">
+                                                    <i class="fa fa-envelope-o"></i>
+                                                </span>
+                                                <strong>New User Registration</strong>
+
+                                                <p>
+                                                    <small>Just Now</small>
+                                                </p>
+                                                <span class="un-read tooltips" data-original-title="Mark as Read" data-toggle="tooltip" data-placement="left">
+                                                    <i class="fa fa-circle"></i>
+                                                </span>
+                                            </a>
+                                            <a href="javascript:;" class="single-mail">
+                                                <span class="icon bg-success">
+                                                    <i class="fa fa-comments-o"></i>
+                                                </span>
+                                                <strong> Private message Send</strong>
+
+                                                <p>
+                                                    <small>30 Mins Ago</small>
+                                                </p>
+                                                <span class="un-read tooltips" data-original-title="Mark as Read" data-toggle="tooltip" data-placement="left">
+                                                    <i class="fa fa-circle"></i>
+                                                </span>
+                                            </a> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <!--notification info end-->
+                        </ul>
+                    </div>
+                    <!--left notification end-->
+                    <!--right notification start-->
+                    <div class="right-notification">
+                        <ul class="notification-menu">
+                            <li>
+                                <a href="javascript:;" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <img src="/Template/Admin/content/img/avatar-mini.jpg" alt="">@HttpContext.Current.User.Identity.Name
+                                    <span class="fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu purple pull-right">
+                                    <li><a href="javascript:;">  资料</a></li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <span class="badge bg-danger pull-right">40%</span>
+                                            <span>设置</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <span class="label bg-info pull-right">new</span>
+                                            帮助
+                                        </a>
+                                    </li>
+                                    <li><a href="@Url.Action("Logout","User")"><i class="fa fa-sign-out pull-right"></i> 注销</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--right notification end-->
+                </div>
+
+            </div>
+            <!-- header section end-->
+            <!-- page head start-->
+            <div class="page-head">
+                <h3 id="txtMenuNameTip">
+                    Welcome
+                </h3>
+                <span class="sub-title" id="txtMenuDescTip">欢迎登陆掌上女友后台管理系统</span>
+            </div>
+            <!-- page head end-->
+            <!--body wrapper start-->
+            <div class="wrapper">
+                @RenderBody()
+
+                <iframe id="txtContentBody" style="width:calc(100%); height: calc(100%); border: 0; margin: 0; padding: 0; min-height: 400px;overflow-y:scroll" src="@Url.Action("Welcome","Control",new { moudleId = 0, menuId = 0 , btnId = 0})"></iframe>
+
+            </div>
+            <!--body wrapper end-->
+        </div>
+        <!-- body content end-->
+    </section>
+    @Scripts.Render("~/JS/Admin/content/BaseScripts")
+    @Scripts.Render("~/Template/Admin/content/JS/Layer/BaseLayer")
+    @Scripts.Render("~/JS/Admin/content/JuCheapMenu")
+    <script>
+        //显示loading提示
+        var firstLoading = layer.load(2);
+        window.onload = function() {
+            setInterval(function () { layer.close(firstLoading); }, 1000);
+        }
+    </script>
+</body>
+</html>

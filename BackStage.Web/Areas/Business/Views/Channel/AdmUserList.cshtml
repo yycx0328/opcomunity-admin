@@ -1,0 +1,88 @@
+﻿@{
+    Layout = "/Areas/Adm/Views/Shared/_Layout_Body.cshtml";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            $("#btnSearch").click(function () {
+                init();
+            });
+
+            init();
+        });
+
+        function init() {
+            var condition = $("#txtCondition").val();
+            if ($("#table_server:has(tbody)").length > 0)
+                $('#table_server > tbody').remove();
+            $.ajax({
+                type: 'POST',
+                url: '/Business/Channel/GetAdmUserList',
+                data: { condition: condition },
+                dataType: 'json',
+                success: function (result) {
+                    if (typeof (result) != undefined && result != null) {
+                        var table = $("#table_server");
+                        var body = $("<tbody></tbody>");
+                        table.append(body)
+                        for (var i = 0; i < result.length; i++) {
+                            var tr = $("<tr></tr>");
+                            body.append(tr);
+                            tr.append("<td>" + result[i].Id + "</td>");
+                            tr.append("<td>" + result[i].LoginName + "</td>");
+                            tr.append("<td>" + result[i].RealName + "</td>");
+                            tr.append("<td>" + result[i].Email + "</td>");
+                            tr.append("<td>" + result[i].CreateDateTime.toString().getDate() + "</td>");
+                            tr.append("<td><a href='/Business/Channel/AdmUserChannel?Id=" + result[i].Id + "'>渠道</a></td>");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <div class="form-inline">
+                    <div class="form-group" style="margin-left:10px;">
+                        <label for="txtCondition">复合条件:</label>
+                        <input type="text" class="form-control" id="txtCondition" placeholder="复合条件">
+                    </div>
+
+                    <button type="submit" id="btnSearch" class="btn btn-success">查询</button>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <table id="table_server" class="table responsive-data-table data-table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            用户Id
+                        </th>
+                        <th>
+                            登录名
+                        </th>
+                        <th>
+                            真实名
+                        </th>
+                        <th>
+                            邮箱
+                        </th>
+                        <th>
+                            注册时间
+                        </th>
+                        <th style="width:50px;">
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+
